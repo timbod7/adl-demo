@@ -1,4 +1,4 @@
-# adl-demo-hs
+# A haskell ADL demonstration
 
 Simple haskell demo showing how [ADL][adl] can be used to define the schema of the configuration file for a hypothetical server.
 
