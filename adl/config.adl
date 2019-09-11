@@ -1,0 +1,30 @@
+/// Application configuration for a hypothetical server
+module config {
+
+struct ServerConfig {
+  Int32 port;
+  Protocol protocol = "http";
+  LogLevel logLevel = "info";
+};
+
+union Protocol {
+  Void http;
+  SslConfiguration https;
+};
+
+struct SslConfiguration {
+  FilePath certificate;
+  FilePath certificateKey;
+};
+
+type FilePath = String;
+
+union LogLevel {
+  Void error;
+  Void warn;
+  Void info;
+  Void debug;
+  Void trace;
+};
+
+};

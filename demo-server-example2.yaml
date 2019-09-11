@@ -1,0 +1,5 @@
+port: 8443
+protocol:
+  https:
+    certificate: /tmp/certificate.crt
+    certificateKey: /tmp/certificate.key
