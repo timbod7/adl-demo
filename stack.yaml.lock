@@ -3,10 +3,45 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: Spock-0.13.0.0@sha256:163ef2698fed8f5801428d8dbe794fd126415a5ff3304b227750fdc4037497be,3745
+    pantry-tree:
+      size: 1118
+      sha256: 9ddd674e7a88e8495727a1857976ee3e5ef5dfa733e379416eb12a42781d586c
+  original:
+    hackage: Spock-0.13.0.0
+- completed:
+    hackage: Spock-core-0.13.0.0@sha256:06e007f23c47bdda52d2927da54160d73f1b6f51a977f3ca9087275698db8f0a,3400
+    pantry-tree:
+      size: 1113
+      sha256: 86140298020f68bb09d07b26a6a6f1666fc3a02715d7986b09150727247a1a84
+  original:
+    hackage: Spock-core-0.13.0.0
+- completed:
+    hackage: reroute-0.5.0.0@sha256:3360747cdc700c9808a38bff48b75926efa443d4af282396082329a218a8d9d3,2446
+    pantry-tree:
+      size: 660
+      sha256: 52afcff0a5dba2fb746be4fa8cfa56cf774272872b61130537fe0e7ad463c0cd
+  original:
+    hackage: reroute-0.5.0.0
+- completed:
+    hackage: stm-containers-0.2.16@sha256:e98efa8dcf0045ea8a78a04b4e2763cf2d8bc33aad0750e2f30a67f8f4e933b1,8454
+    pantry-tree:
+      size: 1564
+      sha256: 00d9830990f351bda6b5322ec4adab4386d0a36d3f1a997ec378434c2923f376
+  original:
+    hackage: stm-containers-0.2.16@sha256:e98efa8dcf0045ea8a78a04b4e2763cf2d8bc33aad0750e2f30a67f8f4e933b1,8454
+- completed:
+    hackage: focus-0.1.5.2@sha256:fc5c76a5be3a9a1c456106d6f389939299c7e05a1a24938b909f043e36a3e37b,1519
+    pantry-tree:
+      size: 206
+      sha256: b8371b82b496602010a3a5b8e33a0e9108a5a3c70d99f842859bae89face740c
+  original:
+    hackage: focus-0.1.5.2@sha256:fc5c76a5be3a9a1c456106d6f389939299c7e05a1a24938b909f043e36a3e37b,1519
 snapshots:
 - completed:
-    size: 499889
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/26.yaml
-    sha256: ecb02ee16829df8d7219e7d7fe6c310819820bf335b0b9534bce84d3ea896684
-  original: lts-13.26
+    size: 524996
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/27.yaml
+    sha256: 7ea31a280c56bf36ff591a7397cc384d0dff622e7f9e4225b47d8980f019a0f0
+  original: lts-14.27

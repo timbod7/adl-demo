@@ -8,9 +8,12 @@ import qualified Data.Yaml as Y
 import ADL.Core(runJsonParser, decodeAdlParseResult, AdlValue(..), ParseResult(..))
 import ADL.Config(ServerConfig(..), Protocol(..))
 import Control.Concurrent(threadDelay)
-import System.Environment(lookupEnv)
+import System.Environment(getArgs)
 import System.IO(stderr, hPutStrLn)
 import System.Exit(exitFailure)
+
+import Web.Spock
+import Web.Spock.Config
 
 -- | Read the contents of the specified file, parsing it
 -- as a yaml serialised ADL value.
@@ -24,28 +27,34 @@ adlFromYamlFile file = (decodeAdlParseResult from . adlFromYamlByteString) <$> (
 
     from = " from " <> T.pack file
 
-
 main :: IO ()
 main = do
-  let configEnvVar = "CONFIG_PATH"
-  mEnvPath <- lookupEnv configEnvVar
-  case mEnvPath of
-    Nothing -> exitWithError (configEnvVar <> " not set in environment")
-    (Just envPath) -> do
-      eConfig <- adlFromYamlFile envPath
+  args <- getArgs
+  case args of
+    [configPath] -> do
+      eConfig <- adlFromYamlFile configPath
       case eConfig of
         (Left emsg) -> exitWithError (T.unpack emsg)
         (Right config) -> startServer config
+    _ -> exitWithError "Usage: server <config.yaml>"
 
-exitWithError :: String -> IO ()
+exitWithError :: String -> IO a
 exitWithError emsg = do
   hPutStrLn stderr emsg
   exitFailure
   
 startServer :: ServerConfig -> IO ()
 startServer sc = do
-  case sc_protocol sc of
-    P_http -> putStrLn ("Starting http server on port " ++ (show (sc_port sc)))
-    P_https{} -> putStrLn ("Starting https server on port " ++ (show (sc_port sc)))
-  threadDelay 1000000000
+  putStrLn ("Starting http server on port " ++ (show (sc_port sc)))
+  spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ())
+  runSpock (fromIntegral (sc_port sc)) (spock spockCfg app)
+
+data MySession = EmptySession
+data MyAppState = DummyAppState ()
+
+app :: SpockM () MySession MyAppState ()
+app =
+    do get root $
+           text "Hello World!"
+
 
