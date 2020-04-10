@@ -6,7 +6,7 @@ import qualified Data.Text as T
 import qualified Data.Yaml as Y
 
 import ADL.Core(runJsonParser, decodeAdlParseResult, AdlValue(..), ParseResult(..))
-import ADL.Config(ServerConfig(..), Protocol(..))
+import ADL.Config(ServerConfig(..))
 import Control.Concurrent(threadDelay)
 import System.Environment(getArgs)
 import System.IO(stderr, hPutStrLn)

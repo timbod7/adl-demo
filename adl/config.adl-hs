@@ -3,7 +3,4 @@ module config {
 import adlc.config.haskell.*;
 
 annotation ServerConfig HaskellFieldPrefix "sc_";
-annotation Protocol HaskellFieldPrefix "p_";
-annotation SslConfiguration HaskellFieldPrefix "ssl_";
-annotation LogLevel HaskellFieldPrefix "log_";
 };
