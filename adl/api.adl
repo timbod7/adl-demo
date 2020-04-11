@@ -1,0 +1,15 @@
+module api {
+
+import types.HttpPost;
+
+struct Api {
+  HttpPost<Empty,Empty> ping = {
+    "path" : "/ping",
+    "security" : "public"
+  };
+};
+
+struct Empty {
+};
+
+};

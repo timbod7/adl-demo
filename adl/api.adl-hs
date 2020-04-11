@@ -1,0 +1,6 @@
+module api {
+
+import adlc.config.haskell.*;
+
+annotation Api HaskellFieldPrefix "api_";
+};

@@ -1,0 +1,6 @@
+module types {
+
+import adlc.config.haskell.*;
+
+annotation HttpPost HaskellFieldPrefix "hp_";
+};

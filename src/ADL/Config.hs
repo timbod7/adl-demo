@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module ADL.Config(
     ServerConfig(..),
+    mkServerConfig,
 ) where
 
 import ADL.Core

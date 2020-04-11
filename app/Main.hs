@@ -7,25 +7,16 @@ import qualified Data.Yaml as Y
 
 import ADL.Core(runJsonParser, decodeAdlParseResult, AdlValue(..), ParseResult(..))
 import ADL.Config(ServerConfig(..))
+import ADL.Api(Api(..), mkApi, Empty(..))
 import Control.Concurrent(threadDelay)
+import Control.Monad.IO.Class
 import System.Environment(getArgs)
 import System.IO(stderr, hPutStrLn)
 import System.Exit(exitFailure)
+import Utils(adlFromYamlFile, adlPost)
 
 import Web.Spock
 import Web.Spock.Config
-
--- | Read the contents of the specified file, parsing it
--- as a yaml serialised ADL value.
-adlFromYamlFile :: AdlValue a => FilePath -> IO (Either T.Text a)
-adlFromYamlFile file = (decodeAdlParseResult from . adlFromYamlByteString) <$> (LBS.readFile file)
-  where
-    adlFromYamlByteString :: (AdlValue a) => LBS.ByteString -> (ParseResult a)
-    adlFromYamlByteString lbs = case Y.decodeEither' (LBS.toStrict lbs) of
-      (Left e) -> ParseFailure ("Invalid yaml:" <> T.pack (Y.prettyPrintParseException e)) []
-      (Right jv) -> runJsonParser jsonParser [] jv
-
-    from = " from " <> T.pack file
 
 main :: IO ()
 main = do
@@ -45,16 +36,17 @@ exitWithError emsg = do
   
 startServer :: ServerConfig -> IO ()
 startServer sc = do
-  putStrLn ("Starting http server on port " ++ (show (sc_port sc)))
   spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ())
   runSpock (fromIntegral (sc_port sc)) (spock spockCfg app)
 
 data MySession = EmptySession
 data MyAppState = DummyAppState ()
+type MyHandler = ActionCtxT () (WebStateM () MySession MyAppState)
 
 app :: SpockM () MySession MyAppState ()
-app =
-    do get root $
-           text "Hello World!"
+app = do
+  let api = mkApi
+  adlPost (api_ping api) handlePing
 
-
+handlePing :: Empty -> MyHandler Empty
+handlePing _ = return Empty
