@@ -3,4 +3,6 @@ module api {
 import adlc.config.haskell.*;
 
 annotation Api HaskellFieldPrefix "api_";
+annotation LoginReq HaskellFieldPrefix "lr_";
+annotation Message HaskellFieldPrefix "m_";
 };

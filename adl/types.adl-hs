@@ -3,4 +3,5 @@ module types {
 import adlc.config.haskell.*;
 
 annotation HttpPost HaskellFieldPrefix "hp_";
+annotation HttpSecurity HaskellFieldPrefix "HS_";
 };

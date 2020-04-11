@@ -7,9 +7,31 @@ struct Api {
     "path" : "/ping",
     "security" : "public"
   };
+
+  HttpPost<LoginReq,Jwt> login = {
+    "path" : "/login",
+    "security" : "public"
+  };
+
+  HttpPost<Message,Empty> newMessage = {
+    "path" : "/new-message",
+    "security" : "token"
+  };
 };
 
 struct Empty {
 };
+
+type Jwt = String;
+
+struct LoginReq {
+  String email;
+  String password;
+};
+
+struct Message {
+  String body;
+};
+
 
 };

@@ -47,19 +47,19 @@ instance (AdlValue i, AdlValue o) => AdlValue (HttpPost i o) where
         <*> parseFieldDef "respType" (ADL.Core.TypeToken.TypeToken)
 
 data HttpSecurity
-    = HttpSecurity_public
-    | HttpSecurity_token
+    = HS_public
+    | HS_token
     deriving (Prelude.Eq,Prelude.Ord,Prelude.Show)
 
 instance AdlValue HttpSecurity where
     atype _ = "types.HttpSecurity"
     
     jsonGen = genUnion (\jv -> case jv of
-        HttpSecurity_public -> genUnionVoid "public"
-        HttpSecurity_token -> genUnionVoid "token"
+        HS_public -> genUnionVoid "public"
+        HS_token -> genUnionVoid "token"
         )
     
     jsonParser = parseUnion $ \disc -> case disc of
-        "public" -> parseUnionVoid HttpSecurity_public
-        "token" -> parseUnionVoid HttpSecurity_token
+        "public" -> parseUnionVoid HS_public
+        "token" -> parseUnionVoid HS_token
         _ -> parseFail "expected a discriminator for HttpSecurity (public,token)" 

@@ -1,19 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NamedFieldPuns #-}
 module Main where
 
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text as T
 import qualified Data.Yaml as Y
+import qualified ADL.Api as API
 
 import ADL.Core(runJsonParser, decodeAdlParseResult, AdlValue(..), ParseResult(..))
 import ADL.Config(ServerConfig(..))
-import ADL.Api(Api(..), mkApi, Empty(..))
 import Control.Concurrent(threadDelay)
 import Control.Monad.IO.Class
+import Network.HTTP.Types.Status(status401)
 import System.Environment(getArgs)
 import System.IO(stderr, hPutStrLn)
 import System.Exit(exitFailure)
-import Utils(adlFromYamlFile, adlPost)
+import Utils(adlFromYamlFile, adlPost, HandlerResponse(..), HasJwtSecret(..))
+import Web.JWT(encodeSigned, hmacSecret)
 
 import Web.Spock
 import Web.Spock.Config
@@ -36,17 +39,44 @@ exitWithError emsg = do
   
 startServer :: ServerConfig -> IO ()
 startServer sc = do
-  spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ())
+  spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (MyAppState sc)
   runSpock (fromIntegral (sc_port sc)) (spock spockCfg app)
 
 data MySession = EmptySession
-data MyAppState = DummyAppState ()
-type MyHandler = ActionCtxT () (WebStateM () MySession MyAppState)
+data MyAppState = MyAppState {
+  mas_serverConfig :: ServerConfig
+}
+
+type MyHandler o = ActionCtxT () (WebStateM () MySession MyAppState) (HandlerResponse o)
+
+instance HasJwtSecret MyAppState where
+  getJwtSecret = sc_jwtSecret . mas_serverConfig
 
 app :: SpockM () MySession MyAppState ()
 app = do
-  let api = mkApi
-  adlPost (api_ping api) handlePing
+  let api = API.mkApi
+  adlPost (API.api_ping api) handlePing
+  adlPost (API.api_login api) handleLogin
+  adlPost (API.api_newMessage api) handleNewMessage
 
-handlePing :: Empty -> MyHandler Empty
-handlePing _ = return Empty
+handlePing :: API.Empty -> MyHandler API.Empty
+handlePing _ = return (Success API.Empty)
+
+handleLogin :: API.LoginReq -> MyHandler API.Jwt
+handleLogin API.LoginReq{API.lr_email, API.lr_password} =
+  if lr_email == "test@email.com" && lr_password == "abcde"
+    then do
+      st <- getState
+      let jwtSecret = sc_jwtSecret (mas_serverConfig st)
+          header = mempty
+          claims = mempty
+          jwt = encodeSigned (hmacSecret jwtSecret) header claims
+      return (Success jwt)
+    else do
+      setStatus status401
+      return Other
+
+handleNewMessage :: API.Message -> MyHandler API.Empty
+handleNewMessage message = do
+  -- do something with the message
+  return (Success API.Empty)
