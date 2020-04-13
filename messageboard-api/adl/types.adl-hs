@@ -1,0 +1,18 @@
+module types {
+
+import adlc.config.haskell.*;
+
+annotation HttpPost HaskellFieldPrefix "hp_";
+annotation HttpSecurity HaskellFieldPrefix "HS_";
+
+annotation TimeStamp HaskellCustomType {
+    "haskellname" : "TimeStamp",
+    "haskellimports" : [
+        "TimeStamp(TimeStamp)"
+     ],
+    "insertCode" : [
+    ],
+    "structConstructor": "TimeStamp.fromText"
+};
+
+};

@@ -1,0 +1,12 @@
+module api {
+
+import adlc.config.haskell.*;
+
+annotation Api HaskellFieldPrefix "api_";
+annotation LoginReq HaskellFieldPrefix "lr_";
+annotation Message HaskellFieldPrefix "m_";
+annotation CreateUserReq HaskellFieldPrefix "cur_";
+annotation CreateUserResp HaskellFieldPrefix "CUR_";
+annotation NewMessageReq HaskellFieldPrefix "nmr_";
+annotation RecentMessagesReq HaskellFieldPrefix "rmr_";
+};

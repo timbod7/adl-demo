@@ -1,0 +1,10 @@
+/// Application configuration for a hypothetical server
+module config {
+
+struct ServerConfig {
+  Int32 port;
+
+  String jwtSecret;
+};
+
+};

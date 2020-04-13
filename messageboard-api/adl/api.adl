@@ -1,0 +1,68 @@
+module api {
+
+import types.Email;
+import types.Empty;
+import types.TimeStamp;
+import types.Jwt;
+import types.HttpPost;
+import types.Password;
+
+struct Api {
+  HttpPost<Empty,Empty> ping = {
+    "path" : "/ping",
+    "security" : "public"
+  };
+
+  HttpPost<LoginReq,Jwt> login = {
+    "path" : "/login",
+    "security" : "public"
+  };
+
+  HttpPost<NewMessageReq,Empty> newMessage = {
+    "path" : "/new-message",
+    "security" : "token"
+  };
+
+  HttpPost<RecentMessagesReq,Vector<Message>> recentMessages = {
+    "path" : "/recent-messages",
+    "security" : "token"
+  };
+
+  HttpPost<CreateUserReq,CreateUserResp> createUser = {
+    "path" : "/create-user",
+    "security" : "adminToken"
+  };
+};
+
+struct LoginReq {
+  Email email;
+  String password;
+};
+
+struct NewMessageReq {
+  String body;
+};
+
+struct RecentMessagesReq {
+  Int32 maxMessages;
+};
+
+struct CreateUserReq {
+  Email email;
+  Password password;
+  Bool isAdmin;
+};
+
+union CreateUserResp {
+  Void success;
+  Void duplicateEmail;
+};
+
+struct Message {
+  String id;
+  Email postedBy;
+  TimeStamp postedAt;
+  String body;
+};
+
+};
