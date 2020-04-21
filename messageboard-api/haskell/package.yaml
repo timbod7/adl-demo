@@ -1,22 +1,12 @@
-name:                hs-adl-demo
+name:                messageboard-server
 version:             0.1.0.0
-github:              "githubuser/hs-adl-demo"
+github:              "timbod7/adl-demo"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+author:              "Tim Docker"
+maintainer:          "tim@dockerz.net"
+copyright:           "2020 Tim Docker"
 
-extra-source-files:
-- README.md
-
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/hs-adl-demo#readme>
+description:         Please see the README on GitHub at <https://github.com/timbod7/adl-demo>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -51,4 +41,4 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - hs-adl-demo
+    - messageboard-server
