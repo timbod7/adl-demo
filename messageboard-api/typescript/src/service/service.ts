@@ -33,4 +33,5 @@ export class Service extends ServiceBase {
 
   newMessage: ReqFn<API.NewMessageReq,Empty> = this.mkPostFn(api.newMessage);
   recentMessages: ReqFn<API.RecentMessagesReq,API.Message[]> = this.mkPostFn(api.recentMessages);
+  createUser: ReqFn<API.CreateUserReq,API.CreateUserResp> = this.mkPostFn(api.createUser);
 };
