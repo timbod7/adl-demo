@@ -9,7 +9,7 @@ import qualified Data.Aeson as JS
 import qualified ADL.Api as API
 
 import ADL.Config(ServerConfig(..))
-import ADL.Types(Empty(..), Jwt)
+import ADL.Types(Empty(..), Jwt, UserId(..))
 import Data.List(find)
 import Data.Password(mkPass, newSalt, hashPassWithSalt, Salt, PassHash(..))
 import Data.Time.Clock(getCurrentTime)
@@ -121,8 +121,9 @@ handleCreateUser req = do
         return API.CUR_duplicateEmail
       Nothing -> do
         let user = createUser salt req
+        let userid = (T.pack (show (length users + 1)))
         modifyTVar' (mas_users st) (user:)
-        return API.CUR_success
+        return (API.CUR_success (UserId userid))
 
 createUser :: Salt -> API.CreateUserReq -> User
 createUser salt req = User (API.cur_email req) (unPassHash hp) (API.cur_isAdmin req)

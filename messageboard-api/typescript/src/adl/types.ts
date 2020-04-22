@@ -55,6 +55,17 @@ export function texprPassword(): ADL.ATypeExpr<Password> {
   return {value : {typeRef : {kind: "reference", value : snPassword}, parameters : []}};
 }
 
+export type UserId = string;
+
+const UserId_AST : ADL.ScopedDecl =
+  {"moduleName":"types","decl":{"annotations":[],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"UserId","version":{"kind":"nothing"}}};
+
+export const snUserId: ADL.ScopedName = {moduleName:"types", name:"UserId"};
+
+export function texprUserId(): ADL.ATypeExpr<UserId> {
+  return {value : {typeRef : {kind: "reference", value : snUserId}, parameters : []}};
+}
+
 export type TimeStamp = string;
 
 const TimeStamp_AST : ADL.ScopedDecl =
@@ -102,6 +113,7 @@ export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "types.Jwt" : Jwt_AST,
   "types.Email" : Email_AST,
   "types.Password" : Password_AST,
+  "types.UserId" : UserId_AST,
   "types.TimeStamp" : TimeStamp_AST,
   "types.HttpPost" : HttpPost_AST,
   "types.HttpSecurity" : HttpSecurity_AST

@@ -7,6 +7,7 @@ module ADL.Types(
     Jwt,
     Password,
     TimeStamp,
+    UserId(..),
     mkEmpty,
     mkHttpPost,
 ) where
@@ -91,3 +92,14 @@ instance AdlValue HttpSecurity where
 type Jwt = T.Text
 
 type Password = T.Text
+
+
+newtype UserId = UserId { unUserId :: T.Text }
+    deriving (Prelude.Eq,Prelude.Ord,Prelude.Show)
+
+instance AdlValue UserId where
+    atype _ = "types.UserId"
+    
+    jsonGen = JsonGen (\(UserId v) -> adlToJson v)
+    
+    jsonParser = UserId <$> jsonParser

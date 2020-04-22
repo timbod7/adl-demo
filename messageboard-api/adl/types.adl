@@ -7,6 +7,8 @@ type Jwt = String;
 type Email = String;
 type Password = String;
 
+newtype UserId = String;
+
 // A UTC timestamp in iso8601 format
 newtype TimeStamp = String;
 

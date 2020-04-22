@@ -82,7 +82,7 @@ instance AdlValue CreateUserReq where
         <*> parseField "isAdmin"
 
 data CreateUserResp
-    = CUR_success
+    = CUR_success ADL.Types.UserId
     | CUR_duplicateEmail
     deriving (Prelude.Eq,Prelude.Ord,Prelude.Show)
 
@@ -90,12 +90,12 @@ instance AdlValue CreateUserResp where
     atype _ = "api.CreateUserResp"
     
     jsonGen = genUnion (\jv -> case jv of
-        CUR_success -> genUnionVoid "success"
+        CUR_success v -> genUnionValue "success" v
         CUR_duplicateEmail -> genUnionVoid "duplicateEmail"
         )
     
     jsonParser = parseUnion $ \disc -> case disc of
-        "success" -> parseUnionVoid CUR_success
+        "success" ->  parseUnionValue CUR_success
         "duplicateEmail" -> parseUnionVoid CUR_duplicateEmail
         _ -> parseFail "expected a discriminator for CreateUserResp (success,duplicateEmail)" 
 

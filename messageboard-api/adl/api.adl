@@ -6,6 +6,7 @@ import types.TimeStamp;
 import types.Jwt;
 import types.HttpPost;
 import types.Password;
+import types.UserId;
 
 struct Api {
   HttpPost<Empty,Empty> ping = {
@@ -54,7 +55,7 @@ struct CreateUserReq {
 };
 
 union CreateUserResp {
-  Void success;
+  UserId success;
   Void duplicateEmail;
 };
 

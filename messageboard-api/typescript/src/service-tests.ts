@@ -1,51 +1,52 @@
-import {PublicService, Service} from './service/service';
+import {Service} from './service/service';
 import {NodeHttp} from './service/node-http';
 import {RESOLVER} from './adl/resolver';
 
 async function run_tests() {
   const http = new NodeHttp();
-  const pservice = new PublicService(http, "http://localhost:8080", RESOLVER);
+  const service = new Service(http, "http://localhost:8080", RESOLVER);
 
   console.log("ping");
-  await pservice.ping({});
+  await service.ping({});
 
   console.log("login as bootstrap admin user");
-  const jwt = await pservice.login({
+  const admin = await service.login({
     email: "admin@test.com",
     password: "xyzzy",
   });
-  const adminuser = new Service(http, "http://localhost:8080", RESOLVER, jwt);
 
   console.log("post messages");
-  await adminuser.newMessage({body: "Hello message board!"});
-  await adminuser.newMessage({body: "It's quiet around here!"});
+  await service.newMessage(admin, {body: "Hello message board!"});
+  await service.newMessage(admin, {body: "It's quiet around here!"});
 
   console.log("create a non-admin user")
-  await adminuser.createUser({
+  const resp = await service.createUser(admin, {
     email: "user@test.com",
     password: "abcde",
     isAdmin: false
   });
+  if (resp.kind == "success") {
+    console.log("new user created with id " + resp.value);
+  }
 
   console.log("login as the new user");
-  const jwt2 = await pservice.login({
+  const user = await service.login({
     email: "user@test.com",
     password: "abcde",
   });
-  const user = new Service(http, "http://localhost:8080", RESOLVER, jwt2);
 
   console.log("post messages");
-  await user.newMessage({body: "I'm unprivileged."});
+  await service.newMessage(user, {body: "I'm unprivileged."});
 
   console.log("recent messages");
-  const messages = await user.recentMessages({
+  const messages = await service.recentMessages(user, {
     maxMessages: 100
   });
   console.log(messages);
 
   console.log("check that the non-admin user can't create new users");
   try {
-    await user.createUser({
+    await service.createUser(user, {
       email: "user2@test.com",
       password: "uioqw",
       isAdmin: false

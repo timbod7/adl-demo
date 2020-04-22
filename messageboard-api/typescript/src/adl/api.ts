@@ -139,13 +139,25 @@ export function texprCreateUserReq(): ADL.ATypeExpr<CreateUserReq> {
   return {value : {typeRef : {kind: "reference", value : snCreateUserReq}, parameters : []}};
 }
 
-export enum CreateUserResp {
-  success,
-  duplicateEmail,
+export interface CreateUserResp_Success {
+  kind: 'success';
+  value: types.UserId;
+}
+export interface CreateUserResp_DuplicateEmail {
+  kind: 'duplicateEmail';
 }
 
+export type CreateUserResp = CreateUserResp_Success | CreateUserResp_DuplicateEmail;
+
+export interface CreateUserRespOpts {
+  success: types.UserId;
+  duplicateEmail: null;
+}
+
+export function makeCreateUserResp<K extends keyof CreateUserRespOpts>(kind: K, value: CreateUserRespOpts[K]) { return {kind, value}; }
+
 const CreateUserResp_AST : ADL.ScopedDecl =
-  {"moduleName":"api","decl":{"annotations":[],"type_":{"kind":"union_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"success","default":{"kind":"nothing"},"name":"success","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"duplicateEmail","default":{"kind":"nothing"},"name":"duplicateEmail","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}]}},"name":"CreateUserResp","version":{"kind":"nothing"}}};
+  {"moduleName":"api","decl":{"annotations":[],"type_":{"kind":"union_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"success","default":{"kind":"nothing"},"name":"success","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"UserId"}},"parameters":[]}},{"annotations":[],"serializedName":"duplicateEmail","default":{"kind":"nothing"},"name":"duplicateEmail","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}]}},"name":"CreateUserResp","version":{"kind":"nothing"}}};
 
 export const snCreateUserResp: ADL.ScopedName = {moduleName:"api", name:"CreateUserResp"};
 

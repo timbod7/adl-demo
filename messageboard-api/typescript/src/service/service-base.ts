@@ -9,36 +9,36 @@ export class ServiceBase {
     private readonly http: HttpFetch,
     private readonly baseUrl: string,
     private readonly resolver: ADL.DeclResolver,
-    private readonly authToken: string | undefined,
   ) {
   }
 
   mkPostFn<I, O>(rtype: HttpPost<I, O>): ReqFn<I, O> {
     const bb = createBiBinding<I, O>(this.resolver, rtype);
     return (req: I) => {
-      return this.postAdl(rtype.path, bb, req);
+      const jsonArgs = bb.reqJB.toJson(req);
+      return this.requestAdl("post", rtype.path, jsonArgs, bb.respJB, undefined);
     };
   }
 
-  private async postAdl<I, O>(
-    path: string,
-    post: BiBinding<I, O>,
-    req: I
-  ): Promise<O> {
-    const jsonArgs = post.reqJB.toJson(req);
-    return this.requestAdl("post", path, jsonArgs, post.respJB);
+  mkAuthPostFn<I, O>(rtype: HttpPost<I, O>): AuthReqFn<I, O> {
+    const bb = createBiBinding<I, O>(this.resolver, rtype);
+    return (authToken:string, req: I) => {
+      const jsonArgs = bb.reqJB.toJson(req);
+      return this.requestAdl("post", rtype.path, jsonArgs, bb.respJB, authToken);
+    };
   }
 
   private async requestAdl<O>(
     method: "get" | "post",
     path: string,
     jsonArgs: {} | null,
-    respJB: JsonBinding<O>
+    respJB: JsonBinding<O>,
+    authToken: string | undefined,
   ): Promise<O> {
     // Construct request
     const headers: { [key: string]: string } = {};
-    if (this.authToken) {
-      headers["Authorization"] = "Bearer " + this.authToken;
+    if (authToken) {
+      headers["Authorization"] = "Bearer " + authToken;
     }
     const httpReq: HttpRequest = {
       url: this.baseUrl + path,
@@ -64,6 +64,8 @@ export class ServiceBase {
 }
 
 export type ReqFn<I, O> = (req: I) => Promise<O>;
+
+export type AuthReqFn<I, O> = (authToken: string, req: I) => Promise<O>;
 
 interface BiTypeExpr<I, O> {
   reqType: ADL.ATypeExpr<I>;
