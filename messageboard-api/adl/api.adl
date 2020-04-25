@@ -1,0 +1,79 @@
+module api {
+
+import types.Email;
+import types.Empty;
+import types.TimeStamp;
+import types.Jwt;
+import types.HttpPost;
+import types.Password;
+import types.UserId;
+
+struct Api {
+  /// Login to obtain an authorization token
+  HttpPost<LoginReq,LoginResp> login = {
+    "path" : "/login",
+    "security" : "public"
+  };
+
+  /// Retrieve recent messages posted to the server
+  HttpPost<RecentMessagesReq,Vector<Message>> recentMessages = {
+    "path" : "/recent-messages",
+    "security" : "token"
+  };
+
+  /// Post a new message
+  HttpPost<NewMessageReq,Empty> newMessage = {
+    "path" : "/new-message",
+    "security" : "token"
+  };
+
+  /// Create a new user, recording their hashed password
+  HttpPost<CreateUserReq,CreateUserResp> createUser = {
+    "path" : "/create-user",
+    "security" : "adminToken"
+  };
+
+  /// Trivial public method to test server liveness
+  HttpPost<Empty,Empty> ping = {
+    "path" : "/ping",
+    "security" : "public"
+  };
+};
+
+struct LoginReq {
+  Email email;
+  String password;
+};
+
+union LoginResp {
+  Jwt success;
+  Void failure;
+};
+
+struct NewMessageReq {
+  String body;
+};
+
+struct RecentMessagesReq {
+  Int32 maxMessages;
+};
+
+struct CreateUserReq {
+  Email email;
+  Password password;
+  Bool isAdmin;
+};
+
+union CreateUserResp {
+  UserId success;
+  Void duplicateEmail;
+};
+
+struct Message {
+  String id;
+  Email postedBy;
+  TimeStamp postedAt;
+  String body;
+};
+
+};

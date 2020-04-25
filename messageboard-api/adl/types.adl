@@ -1,0 +1,36 @@
+module types {
+
+struct Empty {
+};
+
+type Jwt = String;
+type Email = String;
+type Password = String;
+
+newtype UserId = String;
+
+// A UTC timestamp in iso8601 format
+newtype TimeStamp = String;
+
+// A post request with request body of type I, and response
+// body of type O
+struct HttpPost<I,O> {
+  String path;
+  HttpSecurity security;
+  TypeToken<I> reqType = null;
+  TypeToken<O> respType = null;
+};
+
+union HttpSecurity {
+  // The endpoint is publically accessible
+  Void public;
+
+  // A JWT is required in a bearer Authorization header
+  Void token;
+
+  // A JWT with an admin claim is required in a bearer Authorization header
+  Void adminToken;
+};
+
+ 
+};

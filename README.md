@@ -1,5 +1,7 @@
-A collection of demonstration of the ADL system.
+A collection of demonstrations of the ADL system.
 
-- [config-file/haskell][1] : Haskell example using ADL to parse a configuration file
+- [messageboard-api][1] : A multi-language messageboard example
+- [config-file/haskell][2] : Haskell example using ADL to parse a configuration file
 
-[1]:config-file/haskell
+[1]:messageboard-api
+[2]:config-file/haskell
