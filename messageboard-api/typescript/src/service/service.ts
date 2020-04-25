@@ -16,7 +16,7 @@ export class Service extends ServiceBase {
     super(http, baseUrl, resolver);
   }
 
-  login: ReqFn<API.LoginReq, Jwt> = this.mkPostFn(api.login);
+  login: ReqFn<API.LoginReq, API.LoginResp> = this.mkPostFn(api.login);
   ping: ReqFn<Empty, Empty> = this.mkPostFn(api.ping);
   newMessage: AuthReqFn<API.NewMessageReq,Empty> = this.mkAuthPostFn(api.newMessage);
   recentMessages: AuthReqFn<API.RecentMessagesReq,API.Message[]> = this.mkAuthPostFn(api.recentMessages);

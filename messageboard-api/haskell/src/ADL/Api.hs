@@ -4,6 +4,7 @@ module ADL.Api(
     CreateUserReq(..),
     CreateUserResp(..),
     LoginReq(..),
+    LoginResp(..),
     Message(..),
     NewMessageReq(..),
     RecentMessagesReq(..),
@@ -28,34 +29,34 @@ import qualified Data.Text as T
 import qualified Prelude
 
 data Api = Api
-    { api_ping :: (ADL.Types.HttpPost ADL.Types.Empty ADL.Types.Empty)
-    , api_login :: (ADL.Types.HttpPost LoginReq ADL.Types.Jwt)
-    , api_newMessage :: (ADL.Types.HttpPost NewMessageReq ADL.Types.Empty)
+    { api_login :: (ADL.Types.HttpPost LoginReq LoginResp)
     , api_recentMessages :: (ADL.Types.HttpPost RecentMessagesReq [Message])
+    , api_newMessage :: (ADL.Types.HttpPost NewMessageReq ADL.Types.Empty)
     , api_createUser :: (ADL.Types.HttpPost CreateUserReq CreateUserResp)
+    , api_ping :: (ADL.Types.HttpPost ADL.Types.Empty ADL.Types.Empty)
     }
     deriving (Prelude.Eq,Prelude.Ord,Prelude.Show)
 
 mkApi ::  Api
-mkApi  = Api (ADL.Types.HttpPost "/ping" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/login" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/new-message" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/recent-messages" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/create-user" ADL.Types.HS_adminToken (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
+mkApi  = Api (ADL.Types.HttpPost "/login" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/recent-messages" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/new-message" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/create-user" ADL.Types.HS_adminToken (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken)) (ADL.Types.HttpPost "/ping" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
 
 instance AdlValue Api where
     atype _ = "api.Api"
     
     jsonGen = genObject
-        [ genField "ping" api_ping
-        , genField "login" api_login
-        , genField "newMessage" api_newMessage
+        [ genField "login" api_login
         , genField "recentMessages" api_recentMessages
+        , genField "newMessage" api_newMessage
         , genField "createUser" api_createUser
+        , genField "ping" api_ping
         ]
     
     jsonParser = Api
-        <$> parseFieldDef "ping" (ADL.Types.HttpPost "/ping" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
-        <*> parseFieldDef "login" (ADL.Types.HttpPost "/login" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
-        <*> parseFieldDef "newMessage" (ADL.Types.HttpPost "/new-message" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
+        <$> parseFieldDef "login" (ADL.Types.HttpPost "/login" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
         <*> parseFieldDef "recentMessages" (ADL.Types.HttpPost "/recent-messages" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
+        <*> parseFieldDef "newMessage" (ADL.Types.HttpPost "/new-message" ADL.Types.HS_token (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
         <*> parseFieldDef "createUser" (ADL.Types.HttpPost "/create-user" ADL.Types.HS_adminToken (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
+        <*> parseFieldDef "ping" (ADL.Types.HttpPost "/ping" ADL.Types.HS_public (ADL.Core.TypeToken.TypeToken) (ADL.Core.TypeToken.TypeToken))
 
 data CreateUserReq = CreateUserReq
     { cur_email :: ADL.Types.Email
@@ -119,6 +120,24 @@ instance AdlValue LoginReq where
     jsonParser = LoginReq
         <$> parseField "email"
         <*> parseField "password"
+
+data LoginResp
+    = LR_success ADL.Types.Jwt
+    | LR_failure
+    deriving (Prelude.Eq,Prelude.Ord,Prelude.Show)
+
+instance AdlValue LoginResp where
+    atype _ = "api.LoginResp"
+    
+    jsonGen = genUnion (\jv -> case jv of
+        LR_success v -> genUnionValue "success" v
+        LR_failure -> genUnionVoid "failure"
+        )
+    
+    jsonParser = parseUnion $ \disc -> case disc of
+        "success" ->  parseUnionValue LR_success
+        "failure" -> parseUnionVoid LR_failure
+        _ -> parseFail "expected a discriminator for LoginResp (success,failure)" 
 
 data Message = Message
     { m_id :: T.Text

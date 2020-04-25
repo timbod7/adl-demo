@@ -9,35 +9,45 @@ import types.Password;
 import types.UserId;
 
 struct Api {
-  HttpPost<Empty,Empty> ping = {
-    "path" : "/ping",
-    "security" : "public"
-  };
-
-  HttpPost<LoginReq,Jwt> login = {
+  /// Login to obtain an authorization token
+  HttpPost<LoginReq,LoginResp> login = {
     "path" : "/login",
     "security" : "public"
   };
 
-  HttpPost<NewMessageReq,Empty> newMessage = {
-    "path" : "/new-message",
-    "security" : "token"
-  };
-
+  /// Retrieve recent messages posted to the server
   HttpPost<RecentMessagesReq,Vector<Message>> recentMessages = {
     "path" : "/recent-messages",
     "security" : "token"
   };
 
+  /// Post a new message
+  HttpPost<NewMessageReq,Empty> newMessage = {
+    "path" : "/new-message",
+    "security" : "token"
+  };
+
+  /// Create a new user, recording their hashed password
   HttpPost<CreateUserReq,CreateUserResp> createUser = {
     "path" : "/create-user",
     "security" : "adminToken"
+  };
+
+  /// Trivial public method to test server liveness
+  HttpPost<Empty,Empty> ping = {
+    "path" : "/ping",
+    "security" : "public"
   };
 };
 
 struct LoginReq {
   Email email;
   String password;
+};
+
+union LoginResp {
+  Jwt success;
+  Void failure;
 };
 
 struct NewMessageReq {

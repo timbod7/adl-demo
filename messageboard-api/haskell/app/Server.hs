@@ -11,7 +11,7 @@ import qualified ADL.Api as API
 import ADL.Config(ServerConfig(..))
 import ADL.Types(Empty(..), Jwt, UserId(..))
 import Data.List(find)
-import Data.Password(mkPass, newSalt, hashPassWithSalt, Salt, PassHash(..))
+import Data.Password(checkPass, mkPass, newSalt, hashPassWithSalt, Salt, PassCheck(..), PassHash(..))
 import Data.Time.Clock(getCurrentTime)
 import Control.Concurrent.STM.TVar(newTVar, readTVar, modifyTVar', TVar)
 import Control.Monad.IO.Class
@@ -66,7 +66,7 @@ serverApp = do
 handlePing :: Empty -> MyHandler Empty
 handlePing _ = return Empty
 
-handleLogin :: API.LoginReq -> MyHandler Jwt
+handleLogin :: API.LoginReq -> MyHandler API.LoginResp
 handleLogin API.LoginReq{API.lr_email, API.lr_password} = do
   st <- getState
   muser <- liftIO $ atomically $ do
@@ -74,8 +74,12 @@ handleLogin API.LoginReq{API.lr_email, API.lr_password} = do
     return (find (\u -> u_email u == lr_email) users)
   case muser of
     Nothing -> do
+      return API.LR_failure
       error401 "bad login"
     (Just user) -> do
+      case checkPass (mkPass lr_password) (PassHash (u_hashedPassword user)) of
+        PassCheckFail -> error401 "bad login"
+        PassCheckSuccess -> return ()
       let jwtSecret = sc_jwtSecret (mas_serverConfig st)
           header = mempty
           claims = mempty {
@@ -85,7 +89,7 @@ handleLogin API.LoginReq{API.lr_email, API.lr_password} = do
             ])
           }
           jwt = encodeSigned (hmacSecret jwtSecret) header claims
-      return jwt
+      return (API.LR_success jwt)
 
 handleNewMessage :: API.NewMessageReq -> MyHandler Empty
 handleNewMessage req = do

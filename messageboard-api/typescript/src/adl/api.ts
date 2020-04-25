@@ -4,33 +4,48 @@ import * as ADL from './runtime/adl';
 import * as types from './types';
 
 export interface Api {
-  ping: types.HttpPost<types.Empty, types.Empty>;
-  login: types.HttpPost<LoginReq, types.Jwt>;
-  newMessage: types.HttpPost<NewMessageReq, types.Empty>;
+  /**
+   * Login to obtain an authorization token
+   */
+  login: types.HttpPost<LoginReq, LoginResp>;
+  /**
+   * Retrieve recent messages posted to the server
+   */
   recentMessages: types.HttpPost<RecentMessagesReq, Message[]>;
+  /**
+   * Post a new message
+   */
+  newMessage: types.HttpPost<NewMessageReq, types.Empty>;
+  /**
+   * Create a new user, recording their hashed password
+   */
   createUser: types.HttpPost<CreateUserReq, CreateUserResp>;
+  /**
+   * Trivial public method to test server liveness
+   */
+  ping: types.HttpPost<types.Empty, types.Empty>;
 }
 
 export function makeApi(
   input: {
-    ping?: types.HttpPost<types.Empty, types.Empty>,
-    login?: types.HttpPost<LoginReq, types.Jwt>,
-    newMessage?: types.HttpPost<NewMessageReq, types.Empty>,
+    login?: types.HttpPost<LoginReq, LoginResp>,
     recentMessages?: types.HttpPost<RecentMessagesReq, Message[]>,
+    newMessage?: types.HttpPost<NewMessageReq, types.Empty>,
     createUser?: types.HttpPost<CreateUserReq, CreateUserResp>,
+    ping?: types.HttpPost<types.Empty, types.Empty>,
   }
 ): Api {
   return {
-    ping: input.ping === undefined ? {path : "/ping", security : 0, reqType : types.texprEmpty(), respType : types.texprEmpty()} : input.ping,
-    login: input.login === undefined ? {path : "/login", security : 0, reqType : texprLoginReq(), respType : types.texprJwt()} : input.login,
-    newMessage: input.newMessage === undefined ? {path : "/new-message", security : 1, reqType : texprNewMessageReq(), respType : types.texprEmpty()} : input.newMessage,
+    login: input.login === undefined ? {path : "/login", security : 0, reqType : texprLoginReq(), respType : texprLoginResp()} : input.login,
     recentMessages: input.recentMessages === undefined ? {path : "/recent-messages", security : 1, reqType : texprRecentMessagesReq(), respType : ADL.texprVector(texprMessage())} : input.recentMessages,
+    newMessage: input.newMessage === undefined ? {path : "/new-message", security : 1, reqType : texprNewMessageReq(), respType : types.texprEmpty()} : input.newMessage,
     createUser: input.createUser === undefined ? {path : "/create-user", security : 2, reqType : texprCreateUserReq(), respType : texprCreateUserResp()} : input.createUser,
+    ping: input.ping === undefined ? {path : "/ping", security : 0, reqType : types.texprEmpty(), respType : types.texprEmpty()} : input.ping,
   };
 }
 
 const Api_AST : ADL.ScopedDecl =
-  {"moduleName":"api","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"ping","default":{"kind":"just","value":{"path":"/ping","security":"public"}},"name":"ping","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Empty"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Empty"}},"parameters":[]}]}},{"annotations":[],"serializedName":"login","default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"LoginReq"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Jwt"}},"parameters":[]}]}},{"annotations":[],"serializedName":"newMessage","default":{"kind":"just","value":{"path":"/new-message","security":"token"}},"name":"newMessage","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"NewMessageReq"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Empty"}},"parameters":[]}]}},{"annotations":[],"serializedName":"recentMessages","default":{"kind":"just","value":{"path":"/recent-messages","security":"token"}},"name":"recentMessages","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"RecentMessagesReq"}},"parameters":[]},{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"Message"}},"parameters":[]}]}]}},{"annotations":[],"serializedName":"createUser","default":{"kind":"just","value":{"path":"/create-user","security":"adminToken"}},"name":"createUser","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"CreateUserReq"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"CreateUserResp"}},"parameters":[]}]}}]}},"name":"Api","version":{"kind":"nothing"}}};
+  {"moduleName":"api","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"login","default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"LoginReq"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"LoginResp"}},"parameters":[]}]}},{"annotations":[],"serializedName":"recentMessages","default":{"kind":"just","value":{"path":"/recent-messages","security":"token"}},"name":"recentMessages","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"RecentMessagesReq"}},"parameters":[]},{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"Message"}},"parameters":[]}]}]}},{"annotations":[],"serializedName":"newMessage","default":{"kind":"just","value":{"path":"/new-message","security":"token"}},"name":"newMessage","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"NewMessageReq"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Empty"}},"parameters":[]}]}},{"annotations":[],"serializedName":"createUser","default":{"kind":"just","value":{"path":"/create-user","security":"adminToken"}},"name":"createUser","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"CreateUserReq"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"api","name":"CreateUserResp"}},"parameters":[]}]}},{"annotations":[],"serializedName":"ping","default":{"kind":"just","value":{"path":"/ping","security":"public"}},"name":"ping","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"HttpPost"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Empty"}},"parameters":[]},{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Empty"}},"parameters":[]}]}}]}},"name":"Api","version":{"kind":"nothing"}}};
 
 export const snApi: ADL.ScopedName = {moduleName:"api", name:"Api"};
 
@@ -62,6 +77,32 @@ export const snLoginReq: ADL.ScopedName = {moduleName:"api", name:"LoginReq"};
 
 export function texprLoginReq(): ADL.ATypeExpr<LoginReq> {
   return {value : {typeRef : {kind: "reference", value : snLoginReq}, parameters : []}};
+}
+
+export interface LoginResp_Success {
+  kind: 'success';
+  value: types.Jwt;
+}
+export interface LoginResp_Failure {
+  kind: 'failure';
+}
+
+export type LoginResp = LoginResp_Success | LoginResp_Failure;
+
+export interface LoginRespOpts {
+  success: types.Jwt;
+  failure: null;
+}
+
+export function makeLoginResp<K extends keyof LoginRespOpts>(kind: K, value: LoginRespOpts[K]) { return {kind, value}; }
+
+const LoginResp_AST : ADL.ScopedDecl =
+  {"moduleName":"api","decl":{"annotations":[],"type_":{"kind":"union_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"success","default":{"kind":"nothing"},"name":"success","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"types","name":"Jwt"}},"parameters":[]}},{"annotations":[],"serializedName":"failure","default":{"kind":"nothing"},"name":"failure","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}]}},"name":"LoginResp","version":{"kind":"nothing"}}};
+
+export const snLoginResp: ADL.ScopedName = {moduleName:"api", name:"LoginResp"};
+
+export function texprLoginResp(): ADL.ATypeExpr<LoginResp> {
+  return {value : {typeRef : {kind: "reference", value : snLoginResp}, parameters : []}};
 }
 
 export interface NewMessageReq {
@@ -200,6 +241,7 @@ export function texprMessage(): ADL.ATypeExpr<Message> {
 export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "api.Api" : Api_AST,
   "api.LoginReq" : LoginReq_AST,
+  "api.LoginResp" : LoginResp_AST,
   "api.NewMessageReq" : NewMessageReq_AST,
   "api.RecentMessagesReq" : RecentMessagesReq_AST,
   "api.CreateUserReq" : CreateUserReq_AST,

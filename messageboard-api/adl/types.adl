@@ -25,10 +25,10 @@ union HttpSecurity {
   // The endpoint is publically accessible
   Void public;
 
-  // A JWT is required in a bearer authoration header
+  // A JWT is required in a bearer Authorization header
   Void token;
 
-  // A JWT with an admin claim is required in a bearer authoration header
+  // A JWT with an admin claim is required in a bearer Authorization header
   Void adminToken;
 };
 

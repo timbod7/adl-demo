@@ -1,6 +1,7 @@
 import {Service} from './service/service';
 import {NodeHttp} from './service/node-http';
 import {RESOLVER} from './adl/resolver';
+import * as API from "./adl/api";
 
 async function run_tests() {
   const http = new NodeHttp();
@@ -10,10 +11,10 @@ async function run_tests() {
   await service.ping({});
 
   console.log("login as bootstrap admin user");
-  const admin = await service.login({
-    email: "admin@test.com",
-    password: "xyzzy",
-  });
+  const admin = await login(service, {
+      email: "admin@test.com",
+      password: "xyzzy",
+    });
 
   console.log("post messages");
   await service.newMessage(admin, {body: "Hello message board!"});
@@ -30,7 +31,7 @@ async function run_tests() {
   }
 
   console.log("login as the new user");
-  const user = await service.login({
+  const user = await login(service, {
     email: "user@test.com",
     password: "abcde",
   });
@@ -56,4 +57,15 @@ async function run_tests() {
   }
 }
 
+
+async function login(service: Service, req:API.LoginReq): Promise<string>  {
+  const resp = await service.login(req);
+  if (resp.kind == "success") {
+    return resp.value;
+  } else {
+    throw new Error("login failed");
+  }
+}
 run_tests();
+
+
