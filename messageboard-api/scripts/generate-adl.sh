@@ -24,3 +24,4 @@ $ADLC typescript \
   --runtime-dir runtime \
   --generate-transitive \
   adl/*.adl
+  
