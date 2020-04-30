@@ -1,9 +1,13 @@
-/// Application configuration for a hypothetical server
+/// Application configuration for a demonstration api server
 module config {
 
+/// The schema for the server's YAML configuration file
 struct ServerConfig {
-  Int32 port;
 
+  /// The port which accepts http connections
+  Int32 port = 8080;
+
+  /// The secret used to sign the server's json web tokens
   String jwtSecret;
 };
 

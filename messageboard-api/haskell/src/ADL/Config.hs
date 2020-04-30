@@ -20,8 +20,8 @@ data ServerConfig = ServerConfig
     }
     deriving (Prelude.Eq,Prelude.Ord,Prelude.Show)
 
-mkServerConfig :: Data.Int.Int32 -> T.Text -> ServerConfig
-mkServerConfig port jwtSecret = ServerConfig port jwtSecret
+mkServerConfig :: T.Text -> ServerConfig
+mkServerConfig jwtSecret = ServerConfig 8080 jwtSecret
 
 instance AdlValue ServerConfig where
     atype _ = "config.ServerConfig"
@@ -32,5 +32,5 @@ instance AdlValue ServerConfig where
         ]
     
     jsonParser = ServerConfig
-        <$> parseField "port"
+        <$> parseFieldDef "port" 8080
         <*> parseField "jwtSecret"
